@@ -1,0 +1,17 @@
+<div class="container">
+  <h2>Login</h2>
+
+  <!-- Todos input -->
+  <form role="form" ng-submit="authenticate()">
+    <div class="row">
+      <div class="form-group">
+        UserName: <input type="text" ng-model="user.username" placeholder="Username" class="form-control">
+        Password: <input type="password" ng-model="user.password" placeholder="password" class="form-control">
+        <span class="form-group-btn">
+          <input type="submit" class="btn btn-primary" value="Login">
+        </span>
+      </div>
+    </div>
+  </form>
+
+</div>
