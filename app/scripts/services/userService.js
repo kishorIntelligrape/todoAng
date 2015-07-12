@@ -20,6 +20,10 @@ angular.module('mytodoApp')
           .error(function (error) {
             failCallback(error);
           });
+      },
+      logout: function () {
+        localStorageService.set('user', null);
+        $rootScope.user = null;
       }
     };
 

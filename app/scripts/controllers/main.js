@@ -35,6 +35,7 @@ angular.module('mytodoApp')
           $scope.todo = '';
         }, function (data, status) {
           console.log(data, status);
+
         });
       }
     };

@@ -42,8 +42,48 @@ angular
     'LocalStorageModule'
   ]).config(['localStorageServiceProvider', function(localStorageServiceProvider){
     localStorageServiceProvider.setPrefix('ls');
-  }])
-  .config(function ($routeProvider) {
+  }]).config(['$provide', '$httpProvider', function ($provide, $httpProvider) {
+
+    // Intercept http calls.
+    $provide.factory('CustomHttpInterceptor',['$q', '$rootScope', 'localStorageService', '$location', function ($q, $rootScope, localStorageService, $location) {
+      return {
+        // On request success
+        request: function (config) {
+          // Contains the data about the request before it is sent.
+          config.headers['X-Requested-With'] = 'XMLHttpRequest';
+          // Return the config or wrap it in a promise if blank.
+          return config || $q.when(config);
+        },
+        responseError: function(rejection) {
+          var status = rejection.status; // error code
+          if(status === 0) {
+            //$rootScope.$broadcast("SERVER:UNREACHABLE:ERROR", status);
+            return;
+          }
+          /**
+           * If authentication error send user to login page
+           */
+          if (status === 401) {
+            //$rootScope.$broadcast("AUTH:ERROR", status);
+            $rootScope.user = null;
+            localStorageService.set('user', null);
+            $location.path('/');
+            return;
+          }
+
+          if ( (status >= 500) && (status < 600) ) {
+            // TODO $rootScope.$broadcast("SERVER:ERROR", status);
+            return;
+          }
+          return $q.reject(rejection);
+        }
+      };
+    }]);
+
+    // Add the interceptor to the $httpProvider.
+    $httpProvider.interceptors.push('CustomHttpInterceptor');
+
+  }]).config(function ($routeProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/login.html',
@@ -65,6 +105,9 @@ angular
         resolve: {
           factory: checkRouting
         }
+      }).when('/logout', {
+        template: ' ',
+        controller: 'LogoutCtrl'
       })
       .otherwise({
         redirectTo: '/'

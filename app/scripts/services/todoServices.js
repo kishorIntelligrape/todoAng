@@ -30,7 +30,7 @@ angular.module('mytodoApp')
               'Authorization': $rootScope.user.authorizationHeader
             },
             transformRequest: httpUtilService.transformRequest,
-            body: todo
+            data: todo
           }
         ).success(function (data) {
             console.log('appointmentService:: data', data);
