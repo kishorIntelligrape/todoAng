@@ -21,23 +21,29 @@ angular.module('mytodoApp')
     $scope.getTodos = function () {
       todoService.getTodos(function (data) {
         console.log(data);
+        $scope.todos = data;
       }, function (data, status) {
-        console.log(data);
+        console.log(data, status);
       });
     };
 
     $scope.addTodo = function () {
       if ($scope.todo) {
-        $scope.todos.push($scope.todo);
+        todoService.save($scope.todo, function (data) {
+          console.log(data);
+          $scope.todos.push($scope.todo);
+          $scope.todo = '';
+        }, function (data, status) {
+          console.log(data, status);
+        });
       }
-      $scope.todo = '';
     };
 
     $scope.removeTodo = function (index) {
       $scope.todos.splice(index, 1);
     };
     $scope.init = function () {
-      console.log("Main ctrl init is been called");
+      console.log('Main ctrl init is been called');
       $scope.getTodos();
     };
     $scope.init();
